@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rapid_note/constants/paths.dart';
 import 'package:rapid_note/recordings/record_cubit.dart';
@@ -12,6 +13,10 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor: Color(0xff24243e), // navigation bar color
+      statusBarColor: Colors.transparent, // status bar color
+    ));
     return MultiBlocProvider(
       providers: [
         BlocProvider<RecordCubit>(
@@ -23,7 +28,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: HomeScreen(),
+        home: HomeScreen2(),
       ),
     );
   }
