@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rapid_note/constants/paths.dart';
 import 'package:rapid_note/recordings/record_cubit.dart';
 import 'package:rapid_note/screens/home_screen/home_screen.dart';
+import 'package:rapid_note/screens/recordings_list_screen.dart';
 
 void main() async {
   //await Paths.initPaths();
@@ -25,10 +26,11 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Rapid Note',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: HomeScreen2(),
+        home: HomeScreen(),
       ),
     );
   }

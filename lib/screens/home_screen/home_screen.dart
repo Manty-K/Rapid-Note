@@ -168,13 +168,21 @@ class _HomeScreen2State extends State<HomeScreen2> {
                 ),
               ),
               Spacer(),
-              Text(
-                'MY NOTES',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  letterSpacing: 5,
-                  decoration: TextDecoration.underline,
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => RecordingsList()));
+                },
+                child: Text(
+                  'MY NOTES',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    letterSpacing: 5,
+                    decoration: TextDecoration.underline,
+                  ),
                 ),
               ),
               SizedBox(
