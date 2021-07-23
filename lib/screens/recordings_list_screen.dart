@@ -242,7 +242,16 @@ class _RecordingsListState extends State<RecordingsList> {
   }
 
   String dateTimeToTimeString(DateTime dateTime) {
-    return '${dateTime.hour}:${dateTime.minute}';
+    bool isPM = false;
+    int hour = dateTime.hour;
+    int min = dateTime.minute;
+
+    if (hour > 12) {
+      isPM = true;
+      hour -= 12;
+    }
+
+    return '${hour < 10 ? '0' + hour.toString() : hour.toString()}:${min < 10 ? '0' + min.toString() : min.toString()} ${isPM ? 'pm' : 'am'}';
   }
 }
 
