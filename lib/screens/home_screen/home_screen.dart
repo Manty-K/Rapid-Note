@@ -2,208 +2,251 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rapid_note/constants/app_colors.dart';
+import 'package:rapid_note/constants/recorder_constants.dart';
+import 'package:rapid_note/files/cubit/files_cubit.dart';
 import 'package:rapid_note/recordings/record_cubit.dart';
 import 'package:rapid_note/screens/home_screen/widgets/audio_visualizer.dart';
-import 'package:rapid_note/screens/recordings_list_screen.dart';
+import 'package:rapid_note/screens/recordings_list/recordings_list_2.dart';
+import '../../concave_decoration.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class HomeScreen3 extends StatefulWidget {
+  const HomeScreen3({Key? key}) : super(key: key);
 
+  @override
+  _HomeScreen3State createState() => _HomeScreen3State();
+}
+
+class _HomeScreen3State extends State<HomeScreen3> {
+  bool tapped = false;
+  double neomorphicOffset = 5;
+  double blurRadius = 3;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: BlocBuilder<RecordCubit, RecordState>(builder: (context, state) {
-        if (state is RecordOn) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Spacer(),
-              Row(
-                children: [
-                  Spacer(),
-                  StreamBuilder<double>(
-                      initialData: -30.0,
-                      stream: context.read<RecordCubit>().apStream(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          double value = snapshot.data ?? -30.0;
-                          if (value == double.infinity || value < -30.0) {
-                            value = -30.0;
+      backgroundColor: AppColors.mainColor,
+      body: BlocBuilder<RecordCubit, RecordState>(
+        builder: (context, state) {
+          if (state is RecordStopped || state is RecordInitial) {
+            return SafeArea(
+                child: Column(
+              children: [
+                SizedBox(
+                  height: 15,
+                ),
+                appTitle(),
+                Spacer(),
+                neomorphicMic(context, onTap: () {
+                  context.read<RecordCubit>().startRecording();
+                }),
+                Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => List2()));
+                  },
+                  child: myNotes(),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+              ],
+            ));
+          } else if (state is RecordOn) {
+            Stopwatch stopwatch = Stopwatch();
+
+            stopwatch.start();
+            return SafeArea(
+                child: Column(
+              children: [
+                SizedBox(
+                  height: 15,
+                ),
+                appTitle(),
+                SizedBox(
+                  height: 15,
+                ),
+                Text(stopwatch.elapsed.toString()),
+                Spacer(),
+                Row(
+                  children: [
+                    Spacer(),
+                    StreamBuilder<double>(
+                        initialData: RecorderConstants.decibleLimit,
+                        stream: context.read<RecordCubit>().aplitudeStream(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return AudioVisualizer(amplitude: snapshot.data);
                           }
-                          return AudioVisualizer(
-                              value: (value.abs() - 30).abs());
-                        }
-                        if (snapshot.hasError) {
-                          return Text('Error');
-                        } else {
-                          return Text('No');
-                        }
-                      }),
-                  Spacer(),
-                ],
-              ),
-              Spacer(),
-              IconButton(
-                color: Colors.red,
-                onPressed: () {
-                  context.read<RecordCubit>().stopRecording();
-                },
-                icon: Icon(Icons.stop),
-              ),
-            ],
-          );
-        } else if (state is RecordStopped || state is RecordInitial) {
-          return Center(
-            child: IconButton(
-              iconSize: 100,
-              onPressed: () {
-                context.read<RecordCubit>().startRecording();
-              },
-              icon: Icon(Icons.mic),
-            ),
-          );
-        } else {
-          return Text('Error Occured');
-        }
-      }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => RecordingsList()));
+                          if (snapshot.hasError) {
+                            return Text('Error');
+                          } else {
+                            return Text('No');
+                          }
+                        }),
+                    Spacer(),
+                  ],
+                ),
+                Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    stopwatch.reset();
+                    context.read<RecordCubit>().stopRecording();
+                    context.read<FilesCubit>().getFiles();
+                  },
+                  child: Container(
+                    decoration: ConcaveDecoration(
+                      shape: CircleBorder(),
+                      depression: 10,
+                      colors: [AppColors.highlightColor, AppColors.shadowColor],
+                    ),
+                    child: Icon(
+                      Icons.stop,
+                      color: AppColors.accentColor,
+                      size: 50,
+                    ),
+                    height: 100,
+                    width: 100,
+                  ),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+              ],
+            ));
+          } else {
+            return Center(
+                child: Text(
+              'An Error occured',
+              style: TextStyle(color: AppColors.accentColor),
+            ));
+          }
         },
-        child: Icon(Icons.file_present),
       ),
     );
   }
-}
 
-class HomeScreen2 extends StatefulWidget {
-  const HomeScreen2({Key? key}) : super(key: key);
-
-  @override
-  _HomeScreen2State createState() => _HomeScreen2State();
-}
-
-class _HomeScreen2State extends State<HomeScreen2> {
-  bool tapped = false;
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
+  Widget neomorphicMic(BuildContext context, {required Function onTap}) {
+    return GestureDetector(
+      onTapDown: (_) {
+        setState(() {
+          tapped = true;
+        });
+      },
+      onTapUp: (_) {
+        setState(() {
+          tapped = false;
+        });
+        onTap();
+      },
+      onTapCancel: () {
+        setState(() {
+          tapped = false;
+        });
+      },
+      child: Stack(
         children: [
-          AnimatedContainer(
-            duration: Duration(milliseconds: 500),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xff0f0c29),
-                  !tapped ? Color(0xff302b63) : Color(0xff342f69),
-                  Color(0xff24243e),
-                ],
-              ),
-            ),
-          ),
-          SafeArea(
-              child: Column(
-            children: [
-              SizedBox(
-                height: 15,
-              ),
-              Text(
-                'RAPID NOTE',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 50,
-                  letterSpacing: 5,
-                  fontWeight: FontWeight.w200,
+          Positioned(
+            bottom: tapped ? 0 : neomorphicOffset,
+            right: tapped ? 0 : neomorphicOffset,
+            child: Stack(
+              // fit: StackFit.expand,
+              children: [
+                micIcon(
+                  context: context,
+                  color: AppColors.highlightColor,
                 ),
-              ),
-              Spacer(),
-              GestureDetector(
-                onTapDown: (_) {
-                  setState(() {
-                    tapped = true;
-                  });
-                },
-                onTapUp: (_) {
-                  setState(() {
-                    tapped = false;
-                  });
-                },
-                onTapCancel: () {
-                  setState(() {
-                    tapped = false;
-                  });
-                },
-                child: Stack(
-                  children: [
-                    Positioned(
-                      top: tapped ? 0 : 10,
-                      child: Stack(
-                        // fit: StackFit.expand,
-                        children: [
-                          micIcon(
-                            context: context,
-                            color: Colors.black45,
-                          ),
-                          BackdropFilter(
-                            filter: ImageFilter.blur(
-                              sigmaX: tapped ? 0 : 5,
-                              sigmaY: tapped ? 0 : 5,
-                            ),
-                            child: Container(
-                              color: Colors.transparent,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    micIcon(
-                      context: context,
-                    ),
-                  ],
-                ),
-              ),
-              Spacer(),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => RecordingsList()));
-                },
-                child: Text(
-                  'MY NOTES',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    letterSpacing: 5,
-                    decoration: TextDecoration.underline,
+                BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaX: tapped ? 0 : blurRadius,
+                    sigmaY: tapped ? 0 : blurRadius,
+                  ),
+                  child: Container(
+                    color: Colors.transparent,
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 15,
-              ),
-            ],
-          ))
+              ],
+            ),
+          ),
+          Positioned(
+            top: tapped ? 0 : neomorphicOffset,
+            left: tapped ? 0 : neomorphicOffset,
+            child: Stack(
+              // fit: StackFit.expand,
+              children: [
+                micIcon(
+                  context: context,
+                  color: AppColors.shadowColor,
+                ),
+                BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaX: tapped ? 0 : blurRadius,
+                    sigmaY: tapped ? 0 : blurRadius,
+                  ),
+                  child: Container(
+                    color: Colors.transparent,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          micIcon(context: context, color: AppColors.mainColor),
         ],
       ),
     );
   }
 
+  Text myNotes() {
+    return Text(
+      'MY NOTES',
+      style: TextStyle(
+          color: AppColors.accentColor,
+          fontSize: 20,
+          letterSpacing: 5,
+          shadows: [
+            Shadow(
+                offset: Offset(3, 3),
+                blurRadius: 5,
+                color: Colors.black.withOpacity(0.2)),
+          ]
+          //decoration: TextDecoration.underline,
+          ),
+    );
+  }
+
   Widget micIcon({
     required BuildContext context,
-    // Color color = Colors.white,
-    Color color = const Color(0xffff0048),
+    Color color = Colors.black12,
+    // Color color = const Color(0xffff0048),
   }) {
     return Icon(
-      Icons.mic,
+      Icons.mic_rounded,
       size: MediaQuery.of(context).size.height / 2,
       color: color,
     );
+  }
+
+  Widget appTitle() {
+    return Text(
+      'RAPID NOTE',
+      style: TextStyle(
+          color: AppColors.accentColor,
+          fontSize: 50,
+          letterSpacing: 5,
+          fontWeight: FontWeight.w200,
+          shadows: [
+            Shadow(
+                offset: Offset(3, 3),
+                blurRadius: 5,
+                color: Colors.black.withOpacity(0.2)),
+          ]),
+    );
+  }
+
+  String _printDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
   }
 }

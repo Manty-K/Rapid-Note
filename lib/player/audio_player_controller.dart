@@ -3,6 +3,8 @@ import 'package:just_audio/just_audio.dart';
 class AudioPlayerController {
   AudioPlayer _audioPlayer = AudioPlayer();
 
+  AudioPlayer get player => _audioPlayer;
+
   Future<void> play() async {
     await _audioPlayer.play();
   }

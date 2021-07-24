@@ -1,13 +1,28 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:rapid_note/constants/app_colors.dart';
 import 'package:rapid_note/constants/recorder_constants.dart';
 
 class AudioVisualizer extends StatelessWidget {
-  ///value should be between 0 - 1;
-  AudioVisualizer({required this.value}) {
-    height = value * 10;
+  AudioVisualizer({required this.amplitude}) {
+    ///limit amplitude to [decibleLimit]
+    double db = amplitude ?? RecorderConstants.decibleLimit;
+    if (db == double.infinity || db < RecorderConstants.decibleLimit) {
+      db = RecorderConstants.decibleLimit;
+    }
+    if (db > 0) {
+      db = 0;
+    }
+
+    ///this expression converts [db] to [0 to 1] double
+    range = 1 - (db * (1 / RecorderConstants.decibleLimit));
+    print(range);
   }
-  final double value;
-  double height = 0;
+  final double? amplitude;
+  final double maxHeight = 100;
+
+  late final double range;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -28,10 +43,11 @@ class AudioVisualizer extends StatelessWidget {
   }
 
   buildBar(double intensity) {
-    double barHeight = height * intensity;
+    double barHeight = range * maxHeight * intensity;
     if (barHeight < 5) {
       barHeight = 5;
     }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: AnimatedContainer(
@@ -41,16 +57,20 @@ class AudioVisualizer extends StatelessWidget {
         height: barHeight,
         width: 5,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(3),
-          color: Colors.green,
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xff0099F7),
-              Color(0xffF11712),
-            ],
-          ),
+          color: AppColors.mainColor,
+          borderRadius: BorderRadius.circular(5),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.shadowColor,
+              spreadRadius: 1,
+              offset: Offset(1, 1),
+            ),
+            BoxShadow(
+              color: AppColors.highlightColor,
+              spreadRadius: 1,
+              offset: Offset(-1, -1),
+            ),
+          ],
         ),
       ),
     );

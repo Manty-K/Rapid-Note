@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +13,8 @@ class RecordCubit extends Cubit<RecordState> {
   RecordCubit() : super(RecordInitial());
 
   Record _audioRecorder = Record();
+
+  Stopwatch stopwatch = Stopwatch();
 
   void startRecording() async {
     final storagePermissionRequest =
@@ -49,6 +52,7 @@ class RecordCubit extends Cubit<RecordState> {
       //     '.m4a';
 
       await _audioRecorder.start(path: filepath);
+
       emit(RecordOn());
     } else {
       print('Permissions not granted');
@@ -66,7 +70,7 @@ class RecordCubit extends Cubit<RecordState> {
     return amplitude;
   }
 
-  Stream<double> apStream() async* {
+  Stream<double> aplitudeStream() async* {
     while (true) {
       await Future.delayed(Duration(
           milliseconds: RecorderConstants.amplitudeRateInMilliSeconds));
