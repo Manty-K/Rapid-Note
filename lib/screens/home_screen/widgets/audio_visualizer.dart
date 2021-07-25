@@ -1,8 +1,6 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:rapid_note/constants/app_colors.dart';
-import 'package:rapid_note/constants/recorder_constants.dart';
+import '../../../constants/app_colors.dart';
+import '../../../constants/recorder_constants.dart';
 
 class AudioVisualizer extends StatelessWidget {
   AudioVisualizer({required this.amplitude}) {
@@ -52,7 +50,7 @@ class AudioVisualizer extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: AnimatedContainer(
         duration: Duration(
-          milliseconds: RecorderConstants.amplitudeRateInMilliSeconds,
+          milliseconds: RecorderConstants.amplitudeCaptureRateInMilliSeconds,
         ),
         height: barHeight,
         width: 5,

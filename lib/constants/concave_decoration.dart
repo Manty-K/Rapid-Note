@@ -2,7 +2,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-/// this decoration is used for [stop button]
+/// This decoration is used for [stop button]
 class ConcaveDecoration extends Decoration {
   final ShapeBorder shape;
   final double depression;

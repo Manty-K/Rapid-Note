@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 abstract class AppColors {
-  // //Grey theme
+  //Grey theme
   // static final mainColor = Colors.grey[900]!;
   // static final highlightColor = Colors.grey[850]!;
   // static final shadowColor = Colors.black45;
