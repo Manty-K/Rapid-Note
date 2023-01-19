@@ -8,3 +8,7 @@ Check the detailed explanation on [medium](https://medium.com/@manthankhandale/m
 
 
 
+<img src="https://i.ibb.co/BKGHJnR/rapid-image.png"/>
+
+
+
