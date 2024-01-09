@@ -12,7 +12,7 @@ part 'record_state.dart';
 class RecordCubit extends Cubit<RecordState> {
   RecordCubit() : super(RecordInitial());
 
-  Record _audioRecorder = Record();
+  AudioRecorder _audioRecorder = AudioRecorder();
 
   void startRecording() async {
     Map<Permission, PermissionStatus> permissions = await [
@@ -36,8 +36,9 @@ class RecordCubit extends Cubit<RecordState> {
           DateTime.now().millisecondsSinceEpoch.toString() +
           RecorderConstants.fileExtention;
       print(filepath);
+      final config = RecordConfig();
 
-      await _audioRecorder.start(path: filepath);
+      await _audioRecorder.start(config, path: filepath);
 
       emit(RecordOn());
     } else {
